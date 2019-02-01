@@ -1,0 +1,27 @@
+---
+- hosts: all
+  name: Actualización inicial
+  become: yes
+  tasks:
+  - name: Actualizar lista de paquetes y sistema
+    apt: update_cache=yes upgrade=yes
+
+- hosts: nodo1
+  name: Configuración nodo1
+  become: yes
+  tasks:
+  - name: Instalar Postgresql y Bind9
+    apt: name={{ item }} state=latest
+    with_items:
+      - postgresql-9.6
+      - bind9
+
+- hosts: nodo2
+  name: Configuración nodo1
+  become: yes
+  tasks:
+  - name: Instalar Apache2 y PHP
+    apt: name={{ item }} state=latest
+    with_items:
+      - apache2
+      - php7.0
