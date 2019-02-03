@@ -20,3 +20,31 @@ pip install -r requeriments.txt
 ```
 vagrant up
 ```
+
+
+* Estructura Ficheros:
+
+```
+├── ansible.cfg
+├── group_vars
+│   └── all
+│       └── vars.yml
+├── playbook.yml
+└── roles
+    ├── apache2
+    │   ├── tasks
+    │   │   └── main.yml
+    │   └── templates
+    ├── bind9
+    │   └── tasks
+    │       └── main.yml
+    ├── common
+    │   └── tasks
+    │       └── main.yml
+    ├── drupal
+    │   └── tasks
+    │       └── main.yml
+    └── postgresql
+        └── tasks
+            └── main.yml
+```

@@ -34,9 +34,9 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "ansible" do |ansible|
     ansible.verbose = "v"
-    ansible.playbook = "ansible.yml"
+    ansible.playbook = "ansible/playbook.yml"
     ansible.become = true
-    ansible.config_file = "./ansible.cfg"
+    ansible.config_file = "ansible/ansible.cfg"
   end
 
 end

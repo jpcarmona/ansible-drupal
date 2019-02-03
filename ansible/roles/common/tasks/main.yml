@@ -1,0 +1,2 @@
+- name: Actualizar lista de paquetes y sistema
+  apt: update_cache=yes upgrade=yes

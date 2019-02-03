@@ -1,0 +1,7 @@
+packages_nodo1:
+  - postgresql-9.6
+  - bind9
+
+packages_nodo2:
+  - apache2
+  - php7.0
