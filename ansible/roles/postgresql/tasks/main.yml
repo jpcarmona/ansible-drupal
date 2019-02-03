@@ -1,16 +1,37 @@
+---
+- name: Permitir conexiones
+  replace:
+    dest: /etc/postgresql/9.6/main/postgresql.conf
+    regexp: '.*listen_addresses.*'
+    replace: "listen_addresses = '*'"
+
+- name: Permitir conexiones local y con nodo2
+  copy:
+    src: pg_hba.conf
+    dest: /etc/postgresql/9.6/main/pg_hba.conf
+    owner: postgres
+    group: postgres
+    mode: 0640
+
+- name: Reiniciar Postgres
+  service:
+    name: postgresql
+    state: restarted
+
 - name: Creación base de datos
   become_user: postgres
   postgresql_db:
-    #name={{ db_paramaters['name'] }}
-    name=prueba2
+    name={{ db_paramaters['name'] }}
+    #name=prueba2
 
 - name: Creación usuario
   become_user: postgres
   postgresql_user:
-    #db={{ db_paramaters['name'] }}
-    db=prueba2
-    #name={{ db_paramaters['user'] }}
-    name=user2
-    #password={{ db_paramaters['passwd'] }}
-    password=user
-    #priv=ALL
+    db={{ db_paramaters['name'] }}    
+    name={{ db_paramaters['user'] }}    
+    password={{ db_paramaters['passwd'] }}    
+    priv=ALL
+    #db=prueba2
+    #name=user3
+    #password=user
+...

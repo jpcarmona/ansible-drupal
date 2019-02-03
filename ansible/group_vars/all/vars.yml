@@ -1,3 +1,4 @@
+---
 packages_nodo1:
   - postgresql-9.6
   - python-psycopg2
@@ -11,3 +12,4 @@ db_paramaters:
   name: drupal_db
   user: drupal_user
   passwd: drupal
+...
