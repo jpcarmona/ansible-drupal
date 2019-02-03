@@ -1,7 +1,13 @@
 packages_nodo1:
   - postgresql-9.6
+  - python-psycopg2
   - bind9
 
 packages_nodo2:
   - apache2
   - php7.0
+
+db_paramaters:
+  name: drupal_db
+  user: drupal_user
+  passwd: drupal

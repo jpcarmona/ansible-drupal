@@ -6,18 +6,18 @@
 
 - hosts: nodo1
   name: Configuración nodo1
-  tasks:
+  pre_tasks:
   - name: Instalar Postgresql y Bind9
     apt:
       name: "{{ packages_nodo1 }}"
       state: latest
-#  roles:
+  roles:
 #    - bind9
-#    - postgresql
+    - postgresql
 
 - hosts: nodo2
   name: Configuración nodo2
-  tasks:
+  pre_tasks:
   - name: Instalar Apache2 y PHP
     apt:
       name: "{{ packages_nodo2 }}"

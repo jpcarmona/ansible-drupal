@@ -1,0 +1,16 @@
+- name: Creación base de datos
+  become_user: postgres
+  postgresql_db:
+    #name={{ db_paramaters['name'] }}
+    name=prueba2
+
+- name: Creación usuario
+  become_user: postgres
+  postgresql_user:
+    #db={{ db_paramaters['name'] }}
+    db=prueba2
+    #name={{ db_paramaters['user'] }}
+    name=user2
+    #password={{ db_paramaters['passwd'] }}
+    password=user
+    #priv=ALL
