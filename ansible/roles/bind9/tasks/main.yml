@@ -22,9 +22,11 @@
     owner: bind
     group: bind
     mode: 0644
+  notify:
+    Recargar Bind9
 
-- name: Recargamos configuración Bind
-  systemd:
-    name: bind9
-    state: reloaded
+#- name: Recargar Bind9
+#  systemd:
+#    name: bind9
+#    state: reloaded
 ...

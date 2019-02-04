@@ -1,0 +1,6 @@
+---
+- name: Reiniciar Apache2
+  systemd:
+    name: apache2
+    state: restarted
+...

@@ -17,6 +17,15 @@ packages_nodo1:
 packages_nodo2:
   - apache2
   - php7.0
+  #- unzip
+  - php7.0-pgsql
+  - libapache2-mod-php7.0
+  - php7.0-mbstring
+  - php7.0-gd
+  - php7.0-xml
+  ## para drupal
+  #- curl
+  #- git
   ## Paquetes para pruebas
   - postgresql-client-9.6
   - dnsutils

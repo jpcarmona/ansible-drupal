@@ -1,0 +1,6 @@
+---
+- name: Recargar Bind9
+  systemd:
+    name: bind9
+    state: reloaded
+...

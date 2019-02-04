@@ -22,7 +22,7 @@
     apt:
       name: "{{ packages_nodo2 }}"
       state: latest
-#  roles:
-#    - apache2
-#    - drupal
+  roles:
+    - apache2
+    - drupal
 ...

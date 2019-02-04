@@ -37,4 +37,8 @@
     #db=prueba1
     #name=user1
     #password=user
+
+- name: Habilitar "bytea_output" a "escape"
+  become_user: postgres
+  shell: psql -c "ALTER DATABASE \"{{ db_paramaters['name'] }}\" SET bytea_output = 'escape';"
 ...
