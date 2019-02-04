@@ -17,6 +17,10 @@ Vagrant.configure("2") do |config|
         ip: "192.168.56.101",
         name: "vboxnet0",
         adapter: 2
+      nodo1.vm.network "forwarded_port",
+        guest: 5432,
+        host: 2345,
+        adapter: 1
     end
   
     config.vm.define "nodo2" do |nodo2|

@@ -1,4 +1,8 @@
 ---
+ip_nodo1: 192.168.56.101
+
+ip_nodo2: 192.168.56.102
+
 packages_nodo1:
   - postgresql-9.6
   - python-psycopg2
