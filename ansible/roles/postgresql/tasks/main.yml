@@ -6,35 +6,26 @@
     replace: "listen_addresses = '*'"
 
 - name: Permitir conexiones local y con nodo2
-  copy:
-    src: pg_hba.conf
+  template:
+    src: pg_hba.j2
     dest: /etc/postgresql/9.6/main/pg_hba.conf
     owner: postgres
     group: postgres
     mode: 0640
-  notify:
-    Reiniciar Postgresql
-
-#- name: Permitir conexiones local y con nodo2
-#  template:
-#    src: pg_hba.j2
-#    dest: /etc/postgresql/9.6/main/pg_hba.conf
-#    owner: postgres
-#    group: postgres
-#    mode: 0640
+## No ejecuta el handler despues del task(lo hace después del play completo) así que ejecuto reinicio postres manual
 #  notify:
 #    Reiniciar Postgresql
 
-#- name: Reiniciar Postgres
-#  service:
-#    name: postgresql
-#    state: restarted
+- name: Reiniciar Postgres
+  systemd:
+    name: postgresql
+    state: restarted
 
 - name: Creación base de datos
   become_user: postgres
   postgresql_db:
     name={{ db_paramaters['name'] }}
-    #name=prueba2
+    #name=prueba1
 
 - name: Creación usuario
   become_user: postgres
@@ -43,7 +34,7 @@
     name={{ db_paramaters['user'] }}    
     password={{ db_paramaters['passwd'] }}    
     priv=ALL
-    #db=prueba2
-    #name=user3
+    #db=prueba1
+    #name=user1
     #password=user
 ...

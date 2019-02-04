@@ -1,20 +1,30 @@
-#---
-#- name: Permitir conexiones
-#  replace:
-#    dest: /etc/postgresql/9.6/main/postgresql.conf
-#    regexp: '.*listen_addresses.*'
-#    replace: "listen_addresses = '*'"
-#
-#- name: Permitir conexiones local y con nodo2
-#  copy:
-#    src: pg_hba.conf
-#    dest: /etc/postgresql/9.6/main/pg_hba.conf
-#    owner: postgres
-#    group: postgres
-#    mode: 0640
-#
-#- name: Reiniciar Postgres
-#  service:
-#    name: postgresql
-#    state: restarted
-#...
+---
+- name: Configuración zona Bind
+  template:
+    src: zona.juanpe.j2
+    dest: /etc/bind/named.conf.local
+    owner: root
+    group: bind
+    mode: 0644
+
+- name: Configuración zona directa
+  template:
+    src: db_zone.j2
+    dest: /var/cache/bind/db_{{ dns_zone }}
+    owner: bind
+    group: bind
+    mode: 0644
+
+- name: Configuración zona inversa
+  template:
+    src: db_zone_ip.j2
+    dest: /var/cache/bind/db_{{ dns_zone_ip }}
+    owner: bind
+    group: bind
+    mode: 0644
+
+- name: Recargamos configuración Bind
+  systemd:
+    name: bind9
+    state: reloaded
+...

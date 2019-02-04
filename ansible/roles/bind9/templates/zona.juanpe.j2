@@ -1,0 +1,9 @@
+zone "{{ dns_zone }}" {
+type master;
+file "db_{{ dns_zone }}";
+};
+
+zone "{{ dns_zone_ip }}.in-addr.arpa" {
+type master;
+file "db_{{ dns_zone_ip }}.in-addr.arpa";
+};

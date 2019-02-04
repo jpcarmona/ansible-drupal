@@ -12,7 +12,7 @@
       name: "{{ packages_nodo1 }}"
       state: latest
   roles:
-#    - bind9
+    - bind9
     - postgresql
 
 - hosts: nodo2

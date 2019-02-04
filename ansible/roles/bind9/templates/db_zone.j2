@@ -1,0 +1,13 @@
+$TTL 5      ; 5 seg
+@		IN	SOA	nodo1.{{ dns_zone }}. admin@example.org. (
+                                19010401   ; serial
+                                5      ; refresh (6 hours)
+                                5       ; retry (1 hour)
+                                5     ; expire (1 week)
+                                5      ; minimum (6 hours)
+                                )
+$ORIGIN {{ dns_zone }}.
+@			IN	NS	nodo1
+nodo1		IN	A	{{ ip_nodo1 }}
+nodo2		IN	A	{{ ip_nodo2 }}
+{{ cname_drupal }}		IN	CNAME	nodo2
