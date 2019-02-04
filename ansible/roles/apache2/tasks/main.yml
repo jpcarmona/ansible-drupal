@@ -1,0 +1,18 @@
+---
+- name: Configuración virtualhost drupal
+  template:
+    src: drupal.conf.j2
+    dest: /etc/apache2/sites-available/drupal.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Recargamos configuración Bind
+  systemd:
+    name: apache2
+    state: reloaded
+
+- apache2_module:
+    state: present
+    name: rewrite
+...
