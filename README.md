@@ -1,5 +1,52 @@
 # ansible-drupal
 
+* Estructura Ficheros en ansible:
+
+```
+ansible/
+├── ansible.cfg
+├── group_vars
+│   └── all
+│       └── vars.yml
+├── playbook.yml
+└── roles
+    ├── apache2
+    │   ├── handlers
+    │   │   └── main.yml
+    │   ├── tasks
+    │   │   └── main.yml
+    │   └── templates
+    │       └── drupal.conf.j2
+    ├── bind9
+    │   ├── handlers
+    │   │   └── main.yml
+    │   ├── tasks
+    │   │   └── main.yml
+    │   └── templates
+    │       ├── db_zone_ip.j2
+    │       ├── db_zone.j2
+    │       └── zona.juanpe.j2
+    ├── common
+    │   └── tasks
+    │       └── main.yml
+    ├── drupal
+    │   └── tasks
+    │       └── main.yml
+    └── postgresql
+        ├── files
+        │   └── pg_hba.conf
+        ├── handlers
+        │   └── main.yml
+        ├── tasks
+        │   └── main.yml
+        ├── templates
+        │   └── pg_hba.j2
+        └── vars
+            └── main.yml
+```
+
+## Para creación de escenario
+
 * Añadimos box de Debian:
 
 ```
@@ -21,30 +68,7 @@ pip install -r requeriments.txt
 vagrant up
 ```
 
+* Añadimos el servidor dns al resolv.conf del cliente.
 
-* Estructura Ficheros:
+* Entramos en url según tengamos definido en las variables.
 
-```
-├── ansible.cfg
-├── group_vars
-│   └── all
-│       └── vars.yml
-├── playbook.yml
-└── roles
-    ├── apache2
-    │   ├── tasks
-    │   │   └── main.yml
-    │   └── templates
-    ├── bind9
-    │   └── tasks
-    │       └── main.yml
-    ├── common
-    │   └── tasks
-    │       └── main.yml
-    ├── drupal
-    │   └── tasks
-    │       └── main.yml
-    └── postgresql
-        └── tasks
-            └── main.yml
-```

@@ -15,4 +15,29 @@
     group: www-data
     remote_src: yes
     extra_opts: [--strip-components=1]
+
+- name: Copiamos fichero settings.php 
+  copy:
+    src: /var/www/drupal/sites/default/default.settings.php
+    dest: /var/www/drupal/sites/default/settings.php 
+    remote_src: yes
+    owner: www-data
+    group: www-data
+    mode: 0444
+
+- name: Descarga de Drush (Instalación desatendida)
+  get_url:
+    url: https://github.com/drush-ops/drush/releases/download/8.1.18/drush.phar
+    dest: /tmp
+    owner: www-data
+    group: www-data
+    mode: 0644
+
+- name: Instalación desatendida de Drupal8
+  become_user: vagrant
+  shell: "sudo -u www-data php /tmp/drush.phar site-install standard -y \
+    --site-name=\"Drupal de Juanpe\" \
+    --account-name=\"admin\" --account-pass=\"admin\" \
+    --db-url=pgsql://{{ db_paramaters['user'] }}:{{ db_paramaters['passwd'] }}@{{ ip_nodo1 }}/{{ db_paramaters['name'] }} \
+    -r /var/www/drupal "
 ...
