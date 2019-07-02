@@ -1,0 +1,60 @@
+---
+- hosts: nodo1
+  tasks:
+
+#    - name: Add REMI repository
+#      yum_repository:
+#        name: REMI
+#        description: REMI PHP repository
+#        file: remi
+#        baseurl: "http://rpms.famillecollet.com/enterprise/remi-release-6.rpm"
+#        mirrorlist: http://rpms.remirepo.net/enterprise/6/remi/mirror
+#        gpgcheck: yes
+#        enabled: yes
+#
+#    - name: Add REMI PHP56 repository
+#      yum_repository:
+#        name: REMIPHP56
+#        description: REMI PHP repository
+#        file: remi
+#        baseurl: "http://rpms.remirepo.net/enterprise/6/php56/$basearch/"
+#        mirrorlist: http://rpms.remirepo.net/enterprise/6/php56/mirror
+#        gpgcheck: yes
+#        enabled: yes
+
+    - name: GET REMI KEY
+      get_url: 
+        url: "http://rpms.remirepo.net/RPM-GPG-KEY-remi" 
+        dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-remi
+
+    - name: CONFIG REMI REPO
+      copy:
+        src: yum_remi.conf
+        dest: /etc/yum.repos.d/REMI.repo
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: UPGRADE PHP
+      command: yum -y upgrade php*
+
+#    - name: 
+#      yum:
+#        name: "{{ packages }}"
+#        state: latest
+
+    - name: RESTART SERVICES
+      service:
+        name: "{{ item }}"
+        state: restarted
+      with_items: "{{ services }}"
+
+  vars:
+    packages:
+      - php*
+    services:
+      - httpd
+      - php-fpm
+...
+# eliminar /var/lock/subsys/mysql
+# AÑADIR "innodb_data_file_path = ibdata1:10M:autoextend" a /etc/my.cnf

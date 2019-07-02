@@ -1,0 +1,138 @@
+---
+- hosts: nodo1
+  tasks:
+    - name: ADD REPO'S PACKAGE
+      block:
+
+        - name: INSTALL EPEL REPO
+          yum:
+            name: epel-release
+            state: present
+
+        - name: INSTALL WEBTATIC REPO
+          yum:
+            name: "https://mirror.webtatic.com/yum/el7/webtatic-release.rpm"
+            state: present
+        
+        #- name: IMPORT WEBTATIC GPG KEY
+          #rpm_key:
+            #key: "https://mirror.webtatic.com/yum/RPM-GPG-KEY-webtatic-el7"
+            #state: present
+
+    - name: INSTALL PACKAGES
+      yum:
+        name: "{{ packages }}"
+        state: present
+
+    - name: INSTALL PYTHON MODULES
+      pip:
+        name: "{{ modules }}"
+        #executable: "pip3"
+        state: present
+
+    - name: START AND ENABLE SERVICES
+      systemd:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      with_items: "{{ services }}"
+
+    - name: MARIADB config
+      block:
+
+        - name: CREATE DRUPAL DATABASE
+          mysql_db:
+            name: drupal
+            state: present
+
+        - name: CREATE DATABASE USER
+          mysql_user:
+            name: drupal
+            password: drupal
+            priv: 'drupal.*:ALL'
+            state: present
+
+    - name: APACHE config
+      block:
+        - name: ALLOWOVERRIDE ALL /var/www/html
+          replace:
+            path: /etc/httpd/conf/httpd.conf
+            after: '<Directory "/var/www/html">'
+            before: '</Directory>'
+            regexp: '^(    )AllowOverride.*'
+            replace: '    AllowOverride All'
+
+      # Falta configuar URL's limpias
+    - name: DRUPAL config
+      block:
+
+        - name: DOWNLOAD AND UNARCHIVE DRUPAL
+          unarchive:
+            src: https://ftp.drupal.org/files/projects/drupal-8.2.6.tar.gz
+            dest: /var/www/html
+            remote_src: yes
+            list_files: yes
+          register: drupal_directory_name
+#            extra_opts:
+#            - "-C drupal"
+#            - "--strip-components=1"
+
+#        - name: PRUEBA
+#          debug:
+#            msg: "{{ file_status.files[0] }}"
+
+        - name: RENAME DRUPAL DIRECTORY
+          command: mv /var/www/html/"{{ drupal_directory_name.files[0] }}" /var/www/html/drupal
+
+        - name: COPY SETTINGS
+          copy:
+            src: /var/www/html/drupal/sites/default/default.settings.php
+            dest: /var/www/html/drupal/sites/default/settings.php
+            remote_src: yes
+
+        - name: SET OWNER OF DRUPAL PATH TO APACHE
+          file:
+            path: /var/www/html/drupal/
+            state: directory
+            recurse: yes
+            owner: apache
+            group: apache
+
+        - name: SELINUX CONFIG FOR DRUPAL PATH
+          command: chcon -R -t httpd_sys_content_rw_t /var/www/html/drupal/sites/
+
+            # Necesita modulos y versiones de python diferentes
+#        - name: SELINUX CONFIG FOR DRUPAL PATH
+#          sefcontext:
+#            target: '/var/www/html/drupal/sites(/.*)?'
+#            setype: httpd_sys_content_rw_t
+#            state: present
+
+  vars:
+    packages:
+      #- python36-pip
+      - python2-pip
+      ### Necesario sino bug en ansible
+      - python-setuptools
+      ###
+      - httpd      
+      - mariadb-server
+      - mariadb
+      - php70w
+      - php70w-opcache
+      - php70w-mbstring
+      - php70w-gd
+      - php70w-xml
+      - php70w-pear
+      - php70w-fpm
+      - php70w-mysql
+      - php70w-pdo
+      - wget
+      - gzip
+    services:
+      - httpd
+      - mariadb
+      - php-fpm
+    modules:
+      - PyMySQL
+...

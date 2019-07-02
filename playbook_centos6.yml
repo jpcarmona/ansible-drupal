@@ -1,0 +1,122 @@
+---
+- hosts: nodo1
+  tasks:
+    - name: ADD REPO'S PACKAGE
+      block:
+
+        - name: INSTALL EPEL REPO
+          yum:
+            name: epel-release
+            state: present
+
+        - name: Add official MariaDB repository
+          yum_repository:
+            name: MariaDB
+            description: Official MariaDB repository
+            baseurl: "http://yum.mariadb.org/10.3/centos6-amd64"
+            gpgkey: https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+            gpgcheck: true
+
+    - name: INSTALL PACKAGES
+      yum:
+        name: "{{ packages }}"
+        state: present
+
+    - name: INSTALL PYTHON MODULES
+      pip:
+        name: "{{ modules }}"
+        state: present
+      when: modules.0 is defined
+
+    - name: START AND ENABLE SERVICES
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      with_items: "{{ services }}"
+
+    - name: MARIADB CONFIG
+      command: mysql -u root -e "{{ item }}"
+      with_items:
+        - "CREATE DATABASE IF NOT EXISTS drupaldb;"
+        - "CREATE USER IF NOT EXISTS 'drupaluser'@'localhost' IDENTIFIED BY 'drupalpass';"
+        - "GRANT ALL PRIVILEGES ON drupaldb.* TO 'drupaluser'@'localhost';"
+
+    - name: APACHE config
+      block:
+        - name: ALLOWOVERRIDE ALL /var/www/html
+          replace:
+            path: /etc/httpd/conf/httpd.conf
+            after: '<Directory "/var/www/html">'
+            before: '</Directory>'
+            regexp: '^(    )AllowOverride.*'
+            replace: '    AllowOverride All'
+
+    - name: CHECK IF EXIST DRUPAL ALREADY
+      command: find /var/www/html/ -name drupal
+      register: drupal_exist
+      ignore_errors: True
+
+      # Falta configuar URL's limpias
+    - name: DRUPAL config
+      block:
+
+        - name: DOWNLOAD AND UNARCHIVE DRUPAL
+          unarchive:
+            src: http://ftp.drupal.org/files/projects/drupal-7.15.tar.gz
+            dest: /var/www/html
+            remote_src: yes
+            list_files: yes
+            # Unsafe
+            validate_certs: no
+          register: drupal_directory_name
+
+        - name: RENAME DRUPAL DIRECTORY
+          command: mv /var/www/html/"{{ drupal_directory_name.files[0] }}" /var/www/html/drupal
+
+        - name: COPY SETTINGS
+          copy:
+            src: /var/www/html/drupal/sites/default/default.settings.php
+            dest: /var/www/html/drupal/sites/default/settings.php
+            remote_src: yes
+
+        - name: SET OWNER OF DRUPAL PATH TO APACHE
+          file:
+            path: /var/www/html/drupal/
+            state: directory
+            recurse: yes
+            owner: apache
+            group: apache
+
+        - name: SELINUX CONFIG FOR DRUPAL PATH
+          command: chcon -R -t httpd_sys_content_rw_t /var/www/html/drupal/sites/
+      when: (drupal_exist.stdout_lines | length ) < 1
+
+  vars:
+    packages:
+      #- python-pip
+      # Necesario sino bug en ansible
+      - python-setuptools
+      ###
+      - httpd      
+      #- mysql-server
+      - MariaDB-server
+      # PHP
+      - php
+      - php-fpm
+      - php-mbstring
+      - php-gd
+      - php-xml
+      - php-mysql
+      ###
+      - wget
+      - gzip
+      # Para utilizar modulo de SELINUX
+      - libselinux-python
+    services:
+      - httpd
+      - mysql
+      - php-fpm
+...
+# eliminar /var/lock/subsys/mysql
+# AÑADIR "innodb_data_file_path = ibdata1:10M:autoextend" a /etc/my.cnf
